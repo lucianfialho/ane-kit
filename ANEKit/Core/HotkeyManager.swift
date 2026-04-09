@@ -31,13 +31,18 @@ public class HotkeyManager {
 
     public func start() {
         guard monitor == nil else { return }
+        let trusted = AXIsProcessTrusted()
+        print("[HotkeyManager] Starting. Accessibility trusted: \(trusted). keyCode=\(combo.keyCode) modifiers=\(combo.modifiers.rawValue)")
         monitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return }
             let pressed = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            print("[HotkeyManager] keyDown: keyCode=\(event.keyCode) modifiers=\(pressed.rawValue)")
             if event.keyCode == self.combo.keyCode && pressed == self.combo.modifiers {
+                print("[HotkeyManager] ✅ Hotkey matched!")
                 DispatchQueue.main.async { self.handler() }
             }
         }
+        print("[HotkeyManager] Monitor registered: \(monitor != nil)")
     }
 
     public func stop() {
