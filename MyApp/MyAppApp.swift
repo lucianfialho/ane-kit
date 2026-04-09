@@ -30,6 +30,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
+        // Request Accessibility permission (required for global hotkey)
+        let trusted = AXIsProcessTrustedWithOptions(
+            [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
+        )
+        print("[AppDelegate] Accessibility trusted: \(trusted)")
+
         menuBar.setup(appName: AppConfig.appName)
         menuBar.onSettingsRequested = { [weak self] in self?.openSettings() }
 
