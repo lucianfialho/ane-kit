@@ -8,7 +8,7 @@ import Foundation
 struct AppConfig: ANEAppConfig {
     static let appName      = "My ANE App"
     static let bundleID     = "com.yourname.myapp"
-    static let trigger      = Trigger.clipboard
+    static let trigger      = Trigger.hotkey   // popup abre com Cmd+Shift+V
     static let defaultModel = LLMModel.qwen_0_8b
 
     static let actions: [Action] = [
