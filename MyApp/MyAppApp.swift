@@ -58,7 +58,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             hotkey?.start()
         }
 
-        Task { try? await llmEngine.load() }
+        Task {
+            do {
+                try await llmEngine.load()
+            } catch {
+                print("[AppDelegate] LLM load error: \(error.localizedDescription)")
+            }
+        }
     }
 
     private func showPicker(for text: String) {
