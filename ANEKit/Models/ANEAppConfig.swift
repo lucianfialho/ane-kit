@@ -9,3 +9,10 @@ public protocol ANEAppConfig {
     static var defaultModel: LLMModel { get }
     static var actions: [Action] { get }
 }
+
+public extension ANEAppConfig {
+    /// Default hotkey: Cmd+Shift+V. Override in AppConfig to change.
+    static var hotkeyCombo: KeyCombo {
+        KeyCombo(KeyCombo.Keys.v, modifiers: [.command, .shift])
+    }
+}

@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let llmEngine = LLMEngine(model: AppConfig.defaultModel)
     private var hotkey: HotkeyManager?
     private let panel = PopupPanel()
+    private var settingsWindow: NSWindow?
 
     @AppStorage("customActions") private var actionsData: Data = {
         (try? JSONEncoder().encode(AppConfig.actions)) ?? Data()
@@ -37,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             clipboard.onTextCopied = { [weak self] text in self?.showPicker(for: text) }
             clipboard.start()
         case .hotkey:
-            let combo = KeyCombo(KeyCombo.Keys.v, modifiers: [.command, .shift])
+            let combo = AppConfig.hotkeyCombo
             hotkey = HotkeyManager(combo: combo) { [weak self] in
                 if let text = NSPasteboard.general.string(forType: .string), !text.isEmpty {
                     self?.showPicker(for: text)
@@ -45,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             hotkey?.start()
         case .selection:
-            let combo = KeyCombo(KeyCombo.Keys.v, modifiers: [.command, .shift])
+            let combo = AppConfig.hotkeyCombo
             hotkey = HotkeyManager(combo: combo) { [weak self] in
                 NSApp.sendAction(#selector(NSText.copy(_:)), to: nil, from: nil)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -89,9 +90,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     state: .result(result),
                     actionName: action.name,
                     onCopy: { [weak self] output in
+                        guard let self else { return }
+                        // Pause monitor to prevent re-triggering on our own output
+                        if AppConfig.trigger == .clipboard { self.clipboard.stop() }
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(output, forType: .string)
-                        self?.panel.dismiss()
+                        self.panel.dismiss()
+                        // Resume after the clipboard change is past the polling window
+                        if AppConfig.trigger == .clipboard {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                self.clipboard.start()
+                            }
+                        }
                     },
                     onBack: { [weak self] in self?.showPicker(for: text) }
                 ))
@@ -121,5 +131,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.center()
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        settingsWindow = window
     }
 }
