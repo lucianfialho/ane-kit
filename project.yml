@@ -1,0 +1,49 @@
+name: MyApp
+options:
+  bundleIdPrefix: com.yourname
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+
+packages:
+  LLM.swift:
+    url: https://github.com/obra/LLM.swift.git
+    branch: main
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle.git
+    from: "2.6.0"
+
+targets:
+  MyApp:
+    type: application
+    platform: macOS
+    sources:
+      - ANEKit
+      - MyApp
+    settings:
+      base:
+        INFOPLIST_FILE: MyApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MyApp/MyApp.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        PRODUCT_BUNDLE_IDENTIFIER: com.yourname.myapp
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: NO
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+    dependencies:
+      - package: LLM.swift
+        product: LLM
+      - package: Sparkle
+
+  ANEKitTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - ANEKitTests
+    dependencies:
+      - target: MyApp
+    settings:
+      base:
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MyApp.app/Contents/MacOS/MyApp"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        GENERATE_INFOPLIST_FILE: YES
