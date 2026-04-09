@@ -34,16 +34,28 @@ public class LLMEngine: ObservableObject {
         guard !isLoading && !isReady else { return }
         isLoading = true
         defer { isLoading = false }
-        do {
-            let huggingFaceModel = HuggingFaceModel(model.rawValue, .Q4_K_M, template: .chatML())
-            llm = try await LLM(from: huggingFaceModel) { [weak self] progress in
-                Task { @MainActor in self?.downloadProgress = progress }
+
+        let huggingFaceModel = HuggingFaceModel(model.rawValue, .Q4_K_M, template: .chatML())
+        let maxAttempts = 5
+
+        for attempt in 1...maxAttempts {
+            do {
+                llm = try await LLM(from: huggingFaceModel) { [weak self] progress in
+                    Task { @MainActor in self?.downloadProgress = progress }
+                }
+                isReady = llm != nil
+                print("[LLMEngine] Model loaded: \(isReady)")
+                return
+            } catch {
+                print("[LLMEngine] Attempt \(attempt)/\(maxAttempts) failed: \(error)")
+                if attempt < maxAttempts {
+                    let delay = Double(attempt * attempt) * 5.0  // 5s, 20s, 45s, 80s
+                    print("[LLMEngine] Retrying in \(Int(delay))s…")
+                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                } else {
+                    throw LLMError.downloadFailed(error.localizedDescription)
+                }
             }
-            isReady = llm != nil
-            print("[LLMEngine] Model loaded: \(isReady)")
-        } catch {
-            print("[LLMEngine] Load failed: \(error)")
-            throw LLMError.downloadFailed(error.localizedDescription)
         }
     }
 
