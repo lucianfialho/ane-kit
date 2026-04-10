@@ -18,20 +18,14 @@ That's it. SwiftAIKit handles capture, inference, and result presentation.
 
 ---
 
-## How it works
+## Features
 
-[`FoundationModels`](https://developer.apple.com/documentation/foundationmodels) is Apple's official framework (WWDC 2025) for on-device LLM inference — no download, no API key, runs on the ANE automatically. SwiftAIKit wraps it so you only define **Actions** (name, prompt, SF Symbol icon); the framework handles capture, inference, and result presentation.
-
-
-## What the reference implementation includes
-
-The included `MyApp` target is a menu bar app — but that's just one way to use SwiftAIKit. The framework itself is UI-agnostic.
-
-- Menu bar icon with status states
-- Global hotkey (`Cmd+Shift+V`) or clipboard trigger
-- Floating popup near cursor with action picker
-- Result view with one-click copy to clipboard
-- Settings window with full action CRUD
+- **Zero configuration** — define actions in one file, framework handles the rest
+- **Fully on-device** — runs via Apple Neural Engine, no internet required
+- **Privacy first** — text never leaves the device
+- **Two trigger modes** — global hotkey or auto-popup on clipboard copy
+- **Full action CRUD** — add, edit, remove actions at runtime via Settings
+- **UI-agnostic framework** — `MyApp` is just a reference implementation; use SwiftAIKit in any macOS app
 
 ## Requirements
 
