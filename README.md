@@ -3,8 +3,8 @@
 > Apple Intelligence in your macOS app. No API key. No model download. Just actions.
 
 Adding AI to a macOS app used to mean picking a provider, managing API keys,
-handling network errors, and hoping the model is fast enough. SwiftAIKit cuts
-all of that — it runs entirely on-device via the Apple Neural Engine,
+downloading models, worrying about privacy, and hoping the network holds up.
+SwiftAIKit cuts all of that — it runs entirely on-device via the Apple Neural Engine,
 and your entire integration is one file:
 
 ```swift
