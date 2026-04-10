@@ -101,6 +101,17 @@ swift-ai-kit/
   SwiftAIKitTests/                unit tests
 ```
 
+## Using SwiftAIKit in an existing app
+
+SwiftAIKit doesn't have an initializer — it's a template, not a library you call into.
+To integrate it in an existing app:
+
+1. Copy the `SwiftAIKit/` folder into your Xcode project and add the files to your target
+2. Create `AppConfig.swift` conforming to `SwiftAIAppConfig` (see [AppConfig.swift](#appconfigswift) above)
+3. Copy `MyApp/MyAppApp.swift` into your project and wire `AppDelegate` to your `@main` entry point
+
+All behaviour is driven by your `AppConfig` — no other changes needed.
+
 ## License
 
 MIT
